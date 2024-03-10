@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const jwt = require("../utils/jwt");
-const { transporter } = require("../config/emailService");
+
 //registro de un usuario nuevo en el sistema
 const register = async (req, res) => {
     const { 
@@ -42,33 +42,7 @@ const register = async (req, res) => {
 
     try {
         const userStorage = await user.save();
-        res.status(201).send(userStorage);
-        let mailOptions = {
-            from: process.env.EMAIL_MAILER,
-            to: email,
-            subject: 'Welcome to Our Website Triptop System',
-            html: `
-        <p style="font-size: 16px; color: #333; text-align: center;">
-            <b>Thank you for registering with us. We are glad to have you as part of our community.</b>
-        </p>
-        <p style="font-size: 16px; color: #333; text-align: center;">
-            <img src="" alt="Welcome Image" style="max-width: 100%; height: auto;">
-        </p>
-        <p style="font-size: 16px; color: #333; text-align: center;">
-            <a href="http://localhost:3001/VerifyAccount" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 5px;">
-                Verify Your Account
-            </a>
-        </p>
-    `,
-        };
-        // Send the email
-       transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-        }
-    });
+        res.status(201).send(userStorage);  
     } catch (error) {
         res.status(400).send({ msg: "Error al crear el usuario", error: error.message || "Error desconocido" });
     }
