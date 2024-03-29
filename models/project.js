@@ -7,7 +7,8 @@ const projectSchema = mongoose.Schema({
     projectUsers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
-    }]
+    }],
+    projectSubjects:{type:[String]}
 })
 
 module.exports = mongoose.model("Project", projectSchema);

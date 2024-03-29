@@ -24,4 +24,7 @@ router.put("/addUserToProject", projectController.addUser);
 /* http://localhost:3000/api/v1/projects/1/users */
 router.get('/:id/users', projectController.getUsersOfProject);
 
+/* http://localhost:3000/api/v1/projects/search-project/subject/POO */
+router.get("/search-project/subject/:subject",projectController.getProjectsBySubject);
+
 module.exports = router;

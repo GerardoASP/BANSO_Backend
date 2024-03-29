@@ -8,9 +8,9 @@ const modelUser = require('../models/user');
 /*Crear un usuario */
 const createProject = async (req, res)=>{
     try{
-        const {nameProject,stateProject,dateStart,descriptionProject,projectUsers} = req.body;
+        const {nameProject,stateProject,dateStart,descriptionProject,projectUsers,projectSubjects} = req.body;
         // console.log(req.body);
-        const newProject = new modelProject({nameProject,stateProject,dateStart,descriptionProject,projectUsers});
+        const newProject = new modelProject({nameProject,stateProject,dateStart,descriptionProject,projectUsers,projectSubjects});
         // console.log(newPost);
         const savedProject = await newProject.save();
         // res.status(201).json({message: "Post created"});
@@ -48,9 +48,9 @@ const getProject = async (req, res) => {
 /*Actualizar un proyecto */
 const updateProject = async (req,res)=>{
   const { id } = req.params;
-  const { nameProject,stateProject,dateStart,descriptionProject,projectUsers } = req.body;
+  const { nameProject,stateProject,dateStart,descriptionProject,projectUsers,projectSubjects } = req.body;
   try {
-    const project = await modelProject.findByIdAndUpdate(id, { nameProject,stateProject,dateStart,descriptionProject,projectUsers }, { new: true });
+    const project = await modelProject.findByIdAndUpdate(id, { nameProject,stateProject,dateStart,descriptionProject,projectUsers,projectSubjects }, { new: true });
     res.status(200).send(project);
   } catch (error) {
     console.error(error);
@@ -66,9 +66,6 @@ const removeProject = async(req, res)=>{
       if(projectDelete === null) {
           return res.status(404).json({message: "Project not found"});
       }
-      // Eliminar la referencia del proyecto en los usuarios relacionados
-      await modelUser.updateMany({ _id: { $in: projectDelete.projectUsers } }, { $pull: { projectUsers: id } });
-
       res.status(204).json();
   }catch(error){
       res.status(400).json({message: error.message});
@@ -137,6 +134,31 @@ const getUsersOfProject = async (req, res) => {
   }
 }
 
+//Adicional al crud
+//Listar todos los proyectos que tengan un cierto tema
+const getProjectsBySubject = async (req,res) =>{
+  try{
+    const {subject} = req.params;
+
+    //Verificar si se proporciona un tema en los parámetros de la URL
+    if(!subject){
+      return res.status(400).json({message:'Por favor, proporciona un tema valido'})
+    }
+
+    //Busca los productos que coincidan con el tema
+    const projects = await modelProject.find({projectSubjects:subject});
+
+    //Verifica si se encontraron productos
+    if(projects.length === 0){
+      return res.status(404).json({message:'No se encontraron proyectos para el tema proporcionado'});
+    }
+
+    //Devuelve los proyectos encontrados
+    res.status(200).json(projects);
+  }catch(error){
+    res.status(500).json({ message: error.message });
+  }
+}
 
 module.exports = {
   createProject,
@@ -145,5 +167,6 @@ module.exports = {
   removeProject,
   getProject,
   addUser,
-  getUsersOfProject
+  getUsersOfProject,
+  getProjectsBySubject
 }

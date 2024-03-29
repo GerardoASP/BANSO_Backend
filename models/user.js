@@ -2,7 +2,6 @@ const mongoose = require('mongoose')
 const userSchema = mongoose.Schema({
     firstname: { type: String, require: true },
     lastname: { type: String, require: true },
-    country: { type: String, require: true },
     department: { type: String},
     municipality: { type: String},
     document_type: { type: String, require: true },
@@ -12,6 +11,7 @@ const userSchema = mongoose.Schema({
     email: { type: String, require: true, unique: true},
     password: { type: String, require: true },
     rol: { type: String, default:"user"},
+    user_career: { type: String, require: true },
     userProjects: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'project'
