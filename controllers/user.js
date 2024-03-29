@@ -1,16 +1,19 @@
 const express = require('express');
 const modelUser = require('../models/user');
 const modelProject = require('../models/project')
-
+const bcrypt = require('bcrypt');
 
 /* CRUD*/
 
 /*Crear un usuario */
 const createUser = async (req, res)=>{
     try{
-        const {firstname,lastname,country,department,municipality,document_type,document,active,avatar,email,password,rol,userProjects} = req.body;
+        const {firstname,lastname,department,municipality,document_type,document,active,avatar,email,password,rol,user_career,userProjects,} = req.body;
         // console.log(req.body);
-        const newUser = new modelUser({firstname,lastname,country,department,municipality,document_type,document,active,avatar,email,password,rol,userProjects});
+        // Generar un hash de la contraseña
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = new modelUser({firstname,lastname,department,municipality,document_type,document,active,avatar,email,password:hashedPassword,rol,user_career,userProjects});
         // console.log(newPost);
         const savedUser = await newUser.save();
         // res.status(201).json({message: "Post created"});
@@ -62,9 +65,9 @@ const getUserByEmail = async (req, res) => {
 /*Actualizar un usuario */
 const updateUser = async (req,res)=>{
   const { id } = req.params;
-  const { firstname,lastname,country,department,municipality,document_type,document,active,avatar,email,password,rol,userProjects } = req.body;
+  const { firstname,lastname,department,municipality,document_type,document,active,avatar,email,password,rol,user_career,userProjects } = req.body;
   try {
-    const user = await modelUser.findByIdAndUpdate(id, { firstname,lastname,country,department,municipality,document_type,document,active,avatar,email,password,rol,userProjects }, { new: true });
+    const user = await modelUser.findByIdAndUpdate(id, { firstname,lastname,department,municipality,document_type,document,active,avatar,email,password,rol,user_career,userProjects }, { new: true });
     res.status(200).send(user);
   } catch (error) {
     console.error(error);
