@@ -1,6 +1,6 @@
 // emailService.js
 const nodemailer = require('nodemailer');
-
+const dotenv = require('dotenv').config()
 const transporter = nodemailer.createTransport({
   host:"smtp.gmail.com",
   port:465,
