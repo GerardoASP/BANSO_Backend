@@ -5,6 +5,7 @@ const dotenv = require('dotenv').config()
 const userRoutes = require("./routes/user")
 const authRoutes = require("./routes/auth")
 const projectRoutes = require("./routes/project")
+const publicationRoutes = require("./routes/publication")
 
 const cors = require("cors")
 app.use(cors());
@@ -23,5 +24,6 @@ app.use(`/${process.env.API_PATH}/users`,userRoutes);
 app.use(`/${process.env.API_PATH}/auth`,authRoutes);
 
 app.use(`/${process.env.API_PATH}/projects`,projectRoutes);
+app.use(`/${process.env.API_PATH}/publications`,publicationRoutes);
 
 module.exports = app

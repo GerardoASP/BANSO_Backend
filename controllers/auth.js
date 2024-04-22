@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const jwt = require("../utils/jwt");
-
+const { transporter } = require("../config/emailService");
 //registro de un usuario nuevo en el sistema
 const register = async (req, res) => {
     const { 
@@ -14,7 +14,8 @@ const register = async (req, res) => {
             municipality, 
             document_type, 
             document,
-            rol
+            rol,
+            user_career
         } = req.body;
 
     if (!email) return res.status(400).send({ msg: "El email es requerido "});
@@ -25,7 +26,8 @@ const register = async (req, res) => {
     const hashPassword = bcrypt.hashSync(password, salt);
 
     //const hashPassword = await bcrypt.hash(password,salt);
-
+    const generateRandomCode = () => Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+    const verifyCode = generateRandomCode();
     const user = new User({
         firstname,
         lastname,
@@ -37,12 +39,40 @@ const register = async (req, res) => {
         email: email.toLowerCase(),
         password: hashPassword,
         rol,
-        active: false
+        active: false,
+        user_career,
+        verifyCode
     });
 
     try {
         const userStorage = await user.save();
-        res.status(201).send(userStorage);  
+        res.status(201).send(userStorage);
+        let mailOptions = {
+            from: process.env.EMAIL_MAILER,
+            to: email,
+            subject: 'Welcome to Our Website BANSO',
+            html: `
+        <p style="font-size: 16px; color: #333; text-align: center;">
+            <b>Thank you for registering with us. We are glad to have you as part of our community.</b>
+        </p>
+        <p style="font-size: 16px; color: #333; text-align: center;">
+            <img src="" alt="Welcome Image" style="max-width: 100%; height: auto;">
+        </p>
+        <p style="font-size: 16px; color: #333; text-align: center;">
+            <a href="http://localhost:3001/verify-component" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 5px;">
+                Verify Your Account
+            </a>
+        </p>
+    `,
+        };
+        // Send the email
+       transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
     } catch (error) {
         res.status(400).send({ msg: "Error al crear el usuario", error: error.message || "Error desconocido" });
     }
@@ -73,7 +103,7 @@ const login = async (req, res) => {
         res.status(200).send({
             access: jwt.createAccessToken(userStore),
             refresh: jwt.createRefreshToken(userStore),
-            rol: userStore.rol,
+            verifyCodeI: userStore.verifyCode,
         })
     } catch (error) {
         res.status(400).send({ msg: error.message });
