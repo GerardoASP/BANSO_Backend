@@ -27,8 +27,11 @@ router.put("/addProjectToUser", userController.addProject);
 /* http://localhost:3000/api/v1/users/1/projects */
 router.get('/:id/projects', userController.getProjectsOfUser);
 
-/* http://localhost:3000/api/v1/users/1/publications */
-router.get('/:id/publications', userController.getPublicationsOfUser);
+/*  http://localhost:3000/api/v1/users/1/publications 
+router.get('/:id/publications', userController.getPublicationsOfUser); */
+
+/* http://localhost:3000/api/v1/users/31/publications */
+router.get('/:verifyCode/publications', userController.getPublicationsOfUserVerifyCode);
 
 /* http://localhost:3000/api/v1/users/get-user-by-verify-code/token*/
 router.get("/get-user-by-verify-code/:verifyCode",userController.getUserByVerifyCode)
