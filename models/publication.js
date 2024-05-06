@@ -8,7 +8,8 @@ const publicationSchema=mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: "Users" 
     },
-    observations:{type: String}
+    observations:{type: String},
+    contact:{type:String}
 });
   
 module.exports = mongoose.model('Publication', publicationSchema);

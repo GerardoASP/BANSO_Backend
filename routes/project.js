@@ -27,4 +27,7 @@ router.get('/:id/users', projectController.getUsersOfProject);
 /* http://localhost:3000/api/v1/projects/search-project/subject/POO */
 router.get("/search-project/subject/:subject",projectController.getProjectsBySubject);
 
+/* http://localhost:3000/api/v1/projects/search-project/state/POO */
+router.get("/search-project/state/:state",projectController.getProjectsByState);
+
 module.exports = router;

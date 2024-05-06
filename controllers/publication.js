@@ -7,8 +7,8 @@ const modelUser = require('../models/user');
 /*Crear un usuario */
 const createPublication = async (req, res)=>{
     try{
-        const {title,active,description,datePublication,author,observations} = req.body;
-        const newPublication = new modelPublication({title,active,description,datePublication,author,observations});
+        const {title,active,description,datePublication,author,observations,contact} = req.body;
+        const newPublication = new modelPublication({title,active,description,datePublication,author,observations,contact});
 
         const savedPublication = await newPublication.save();
 
@@ -79,9 +79,9 @@ const removePublication = async(req, res)=>{
 /*Actualizar un proyecto */
 const updatePublication = async (req,res)=>{
     const { id } = req.params;
-    const { title,active,description,datePublication,author,observations } = req.body;
+    const { title,active,description,datePublication,author,observations,contact } = req.body;
     try {
-      const publication = await modelProject.findByIdAndUpdate(id, { title,active,description,datePublication,author,observations }, { new: true });
+      const publication = await modelProject.findByIdAndUpdate(id, { title,active,description,datePublication,author,observations,contact }, { new: true });
       res.status(200).send(publication);
     } catch (error) {
       console.error(error);

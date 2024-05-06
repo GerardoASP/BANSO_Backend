@@ -153,13 +153,50 @@ const getProjectsOfUser = async (req, res) => {
   }
 }
 
-const getPublicationsOfUser = async (req, res) => {
+/* const getPublicationsOfUser = async (req, res) => {
   try {
     const { id } = req.params;
 
     // Buscamos el usuario en la base de datos utilizando su ID
     const user = await modelUser.findById(id);
 
+    // Verificamos si el usuario existe
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Obtenemos los IDs de los proyectos asociados al usuario
+    const publicationIds = user.userPublications.map(id => mongoose.Types.ObjectId(id));
+    console.log(publicationIds)
+
+    // Verificamos que haya IDs de publicaciones
+    if (!publicationIds || publicationIds.length === 0) {
+      return res.status(404).json({ message: "No publications found for this user" });
+    }
+
+    // Buscamos los proyectos en la base de datos utilizando los IDs
+    const publications = await modelPublication.find({ _id: { $in: publicationIds } });
+
+    console.log("Publications found:", publications);
+    // Verificamos si se encontraron publicaciones
+    if (!publications || publications.length === 0) {
+      return res.status(404).json({ message: "No publications found for the given IDs" });
+    }
+
+    // Retornamos las publicaciones encontradas
+    res.status(200).json(publications);
+  } catch (error) {
+    // Manejamos errores
+    console.error("Error fetching user publications:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}; */
+
+const getPublicationsOfUserVerifyCode = async (req, res) => {
+  const verifyCode = req.params.verifyCode;
+  try {
+    // Buscamos el usuario en la base de datos utilizando su email
+    const user = await modelUser.findOne({ verifyCode: verifyCode });
     // Verificamos si el usuario existe
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -216,5 +253,5 @@ module.exports = {
   addProject,
   getProjectsOfUser,
   getUserByVerifyCode,
-  getPublicationsOfUser
+  getPublicationsOfUserVerifyCode
 }
