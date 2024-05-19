@@ -59,7 +59,7 @@ const register = async (req, res) => {
             <img src="" alt="Welcome Image" style="max-width: 100%; height: auto;">
         </p>
         <p style="font-size: 16px; color: #333; text-align: center;">
-            <a href="http://localhost:3001/verify-component" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 5px;">
+            <a href="http://localhost:3002/verify-component" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 5px;">
                 Verify Your Account
             </a>
         </p>

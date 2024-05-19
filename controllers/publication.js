@@ -52,15 +52,16 @@ const getPublication = async (req, res) => {
 
 const removePublication = async(req, res)=>{
     const publicationId = req.params.id;
-    const userId = req.body.userId;
+    const userVerifyCode = req.body.userVerifyCode;
     console.log(publicationId);
-    console.log(userId);
+    console.log(userVerifyCode);
     // const {postId, userId} = req.query;
     // console.log("postId", postId);
     // console.log("userId", userId);
     try{
         // Encuentra el usuario al que deseas agregar el post
-        const user = await modelUser.findById(userId);
+        const user = await modelUser.findOne({verifyCode:userVerifyCode});
+        console.log(user)
         
         // Elimina el post del array 'posts' del usuario
         user.userPublications.pull(publicationId);
@@ -81,7 +82,7 @@ const updatePublication = async (req,res)=>{
     const { id } = req.params;
     const { title,active,description,datePublication,author,observations,contact } = req.body;
     try {
-      const publication = await modelProject.findByIdAndUpdate(id, { title,active,description,datePublication,author,observations,contact }, { new: true });
+      const publication = await modelPublication.findByIdAndUpdate(id, { title,active,description,datePublication,author,observations,contact }, { new: true });
       res.status(200).send(publication);
     } catch (error) {
       console.error(error);

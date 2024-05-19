@@ -8,11 +8,20 @@ const modelUser = require('../models/user');
 /*Crear un usuario */
 const createProject = async (req, res)=>{
     try{
-        const {nameProject,stateProject,dateStart,descriptionProject,projectUsers,projectSubjects,linkFrontendRepository,linkBackendRepository,linkGeneralRepository} = req.body;
+        const {nameProject,stateProject,dateStart,descriptionProject,projectUser,projectSubjects,linkGeneralRepository} = req.body;
         // console.log(req.body);
-        const newProject = new modelProject({nameProject,stateProject,dateStart,descriptionProject,projectUsers,projectSubjects,linkFrontendRepository,linkBackendRepository,linkGeneralRepository});
+        const newProject = new modelProject({nameProject,stateProject,dateStart,descriptionProject,projectUser,projectSubjects,linkGeneralRepository});
         // console.log(newPost);
         const savedProject = await newProject.save();
+
+        // Recupera el usuario al que deseas agregar el post
+        const user = await modelUser.findById(projectUser);
+        
+        // Agrega el ObjectId del nuevo post al array correspondiente
+        user.userProjects.push(savedProject._id);
+        
+        // Guarda el usuario
+        await user.save();
         // res.status(201).json({message: "Post created"});
         res.status(201).json(savedProject);
     }catch(error){
@@ -48,9 +57,9 @@ const getProject = async (req, res) => {
 /*Actualizar un proyecto */
 const updateProject = async (req,res)=>{
   const { id } = req.params;
-  const { nameProject,stateProject,dateStart,descriptionProject,projectUsers,projectSubjects,linkGeneralRepository } = req.body;
+  const { nameProject,stateProject,dateStart,descriptionProject,projectUser,projectSubjects,linkGeneralRepository } = req.body;
   try {
-    const project = await modelProject.findByIdAndUpdate(id, { nameProject,stateProject,dateStart,descriptionProject,projectUsers,projectSubjects,linkGeneralRepository }, { new: true });
+    const project = await modelProject.findByIdAndUpdate(id, { nameProject,stateProject,dateStart,descriptionProject,projectUser,projectSubjects,linkGeneralRepository }, { new: true });
     res.status(200).send(project);
   } catch (error) {
     console.error(error);
@@ -60,8 +69,16 @@ const updateProject = async (req,res)=>{
 
 /*Eliminar un usuario en especifico */
 const removeProject = async(req, res)=>{
+  const userVerifyCode = req.body.userVerifyCode;
   try{
       const {id} = req.params;
+      
+      // Encuentra el usuario al que deseas agregar el post
+      const user = await modelUser.findOne({verifyCode:userVerifyCode});
+      console.log(user)
+      // Elimina el post del array 'posts' del usuario
+      user.userProjects.pull(id);
+      await user.save();
       const projectDelete = await modelProject.findByIdAndDelete(id)
       if(projectDelete === null) {
           return res.status(404).json({message: "Project not found"});
@@ -73,38 +90,6 @@ const removeProject = async(req, res)=>{
 }
 
 //Metodos Adicionales
-//Agregar un usuario a un proyecto
-const addUser = async(req,res)=>{
-  try{
-    //Cuerpo del request
-    const {projectId, userId} = req.body;
-
-    //Capturar la información de un proyecto a partir de un id dado
-    const project = await modelProject.findById(projectId);
-    //Capturar la infromación de un usuario a partir de un id dado
-    const user = await modelUser.findById(userId);
-
-    //Validar si el proyecto existe
-    if(!project){
-      return res.status(404).json({message:"Project not found"})
-    }
-    //Validar si el proyecto existe
-    if(!user){
-      return res.status(404).json({message:"User not found"})
-    }
-    
-    // Agregar el usuario al array de projectUsers
-    project.projectUsers.push(userId);
-
-    // Guardar el proyecto actualizado en la base de datos
-    const updatedProject = await project.save();
- 
-    // Devolver el proyecto actualizado como respuesta
-    res.status(200).json(updatedProject);
-  }catch(error){
-    res.status(400).json({message: error.message});
-  }
-}
 
 // Listar los usuarios de un proyecto
 const getUsersOfProject = async (req, res) => {
@@ -160,7 +145,7 @@ const getProjectsBySubject = async (req,res) =>{
   }
 }
 
-//Listar todos los proyectos que tengan un cierto tema
+//Listar todos los proyectos que tengan un cierto estado
 const getProjectsByState = async (req,res) =>{
   try{
     const {state} = req.params;
@@ -191,7 +176,6 @@ module.exports = {
   updateProject,
   removeProject,
   getProject,
-  addUser,
   getUsersOfProject,
   getProjectsBySubject,
   getProjectsByState

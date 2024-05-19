@@ -25,7 +25,7 @@ router.get("/get-user-by-email/:email",userController.getUserByEmail)
 router.put("/addProjectToUser", userController.addProject);
 
 /* http://localhost:3000/api/v1/users/1/projects */
-router.get('/:id/projects', userController.getProjectsOfUser);
+router.get('/:verifyCode/projects', userController.getProjectsOfUser);
 
 /*  http://localhost:3000/api/v1/users/1/publications 
 router.get('/:id/publications', userController.getPublicationsOfUser); */

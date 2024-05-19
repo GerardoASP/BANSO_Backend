@@ -127,12 +127,14 @@ const addProject = async(req,res)=>{
 
 // Listar los proyectos de un usuario
 const getProjectsOfUser = async (req, res) => {
+  const verifyCode = req.params.verifyCode;
   try {
-      // Obtenemos el ID del usuario de los parámetros de la solicitud
-      const { id } = req.params;
-
-      // Buscamos el proyecto en la base de datos utilizando su ID
-      const user = await modelUser.findById(id);
+      // Buscamos el usuario en la base de datos utilizando su email
+    const user = await modelUser.findOne({ verifyCode: verifyCode });
+    // Verificamos si el usuario existe
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
       // Verificamos si el usuario existe
       if (!user) {
@@ -140,7 +142,7 @@ const getProjectsOfUser = async (req, res) => {
       }
 
       // Obtenemos los IDs de los proyectos asociados al usuario
-      const projectIds = user.userProjects;
+      const projectIds = user.userProjects.map(id => new mongoose.Types.ObjectId(id));;
 
       // Buscamos los proyectos en la base de datos utilizando sus IDs
       const projects = await modelProject.find({ _id: { $in: projectIds } });
