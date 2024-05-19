@@ -4,10 +4,10 @@ const projectSchema = mongoose.Schema({
     stateProject: { type: String, require: true },
     dateStart: { type: String, require: true },
     descriptionProject: { type: String},
-    projectUsers: [{
+    projectUser: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
-    }],
+    },
     projectSubjects:{type:[String]},
     linkGeneralRepository:{type:String}
 })
